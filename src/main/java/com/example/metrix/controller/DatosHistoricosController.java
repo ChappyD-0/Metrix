@@ -18,9 +18,10 @@ public class DatosHistoricosController {
     DatosHistoricosRepository datosHistoricosRepository;
 
     @CrossOrigin
-    @GetMapping
+    @GetMapping("/api/datos-historicos")
     public DatosHistoricos obtenerDatosHistoricos() {
         Optional<DatosHistoricos> datos = datosHistoricosRepository.findById(1);
         return datos.orElse(null);
     }
+
 }

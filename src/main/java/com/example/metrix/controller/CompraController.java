@@ -2,8 +2,10 @@ package com.example.metrix.controller;
 
 import com.example.metrix.model.Boleto;
 import com.example.metrix.model.Compra;
+import com.example.metrix.model.DatosHistoricos;
 import com.example.metrix.model.Funcion;
 import com.example.metrix.repository.CompraRepository;
+import com.example.metrix.repository.DatosHistoricosRepository;
 import com.example.metrix.repository.FuncionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,9 @@ public class CompraController {
 
     @Autowired
     private FuncionRepository funcionRepository;
+    @Autowired
+    private DatosHistoricosRepository datosHistoricosRepository;
+
 
     @CrossOrigin
     @PostMapping("registrar-compra")
@@ -52,8 +57,34 @@ public class CompraController {
         funcion.setDineroRecaudado(funcion.getDineroRecaudado() + montoTotal);
         funcionRepository.save(funcion);
 
+        // Actualizar Datos Historicos
+        actualizarDatosHistoricos(boletos.size(), montoTotal);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(compraGuardada);
     }
+
+    // Método para actualizar los datos históricos después de una compra
+    private void actualizarDatosHistoricos(int boletosVendidos, double montoTotal) {
+        Optional<DatosHistoricos> datosHistoricosOptional = datosHistoricosRepository.findById(1);
+        DatosHistoricos datosHistoricos;
+
+        if (datosHistoricosOptional.isPresent()) {
+            datosHistoricos = datosHistoricosOptional.get();
+        } else {
+            datosHistoricos = new DatosHistoricos();
+            datosHistoricos.setIdDatos(1);
+            datosHistoricos.setFechaInicio(java.time.LocalDate.now());
+        }
+
+        // Actualizar los campos de DatosHistóricos
+        datosHistoricos.setTotalDeVentas(datosHistoricos.getTotalDeVentas() + montoTotal);
+        datosHistoricos.setTotalAsientosOcupados(datosHistoricos.getTotalAsientosOcupados() + boletosVendidos);
+        // No modificar el número de funciones impartidas, ya que sigue siendo la misma función.
+
+        // Guardar el registro actualizado de DatosHistoricos
+        datosHistoricosRepository.save(datosHistoricos);
+    }
+
 
     @CrossOrigin
     @GetMapping("asientos-ocupados/{idFuncion}")
@@ -66,8 +97,8 @@ public class CompraController {
 
         Funcion funcion = funcionOptional.get();
         List<String> asientosOcupados = funcion.getBoletosVendidos().stream()
-                                               .map(Boleto::getCodigo)
-                                               .collect(Collectors.toList());
+                .map(Boleto::getCodigo)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(asientosOcupados);
     }
