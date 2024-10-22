@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.NotEmpty;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class Compra {
 
     @NotNull
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "compra")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "compra", orphanRemoval = true)
     private List<Boleto> boletos = new ArrayList<>();
 
     public @NotNull List<Boleto> getBoletos() {

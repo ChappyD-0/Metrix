@@ -58,4 +58,32 @@ public class CompraController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(compraGuardada);
     }
+    @CrossOrigin
+    @DeleteMapping("/cancelar-compra/{idCompra}")
+    @Transactional
+    public ResponseEntity<?> cancelarCompra(@PathVariable Integer idCompra) {
+        Optional<Compra> compraOptional = compraRepository.findById(idCompra);
+        if (!compraOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La compra no existe.");
+        }
+
+        Compra compra = compraOptional.get();
+        Funcion funcion = compra.getFuncion();
+
+        // Actualizar el dinero recaudado en la función
+        funcion.setDineroRecaudado(funcion.getDineroRecaudado() - compra.getMonto());
+
+        // Actualizar la lista de boletos vendidos en la función
+        List<Boleto> boletosCompra = compra.getBoletos();
+        funcion.getBoletosVendidos().removeAll(boletosCompra);
+
+        // Guardar los cambios en la función
+        funcionRepository.save(funcion);
+
+        // Eliminar la compra (los boletos asociados se eliminarán gracias a CascadeType.ALL)
+        compraRepository.delete(compra);
+
+        return ResponseEntity.ok("La compra ha sido cancelada exitosamente.");
+    }
+
 }

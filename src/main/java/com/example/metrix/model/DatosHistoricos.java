@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity
-public class DatosHistoricos {
+public class  DatosHistoricos {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idDatos;
@@ -18,7 +18,7 @@ public class DatosHistoricos {
     private double totalDeVentas;
     private int totalBoletosOfertados;
     private int totalAsientosOcupados;
-    private LocalDate fechaInicio;
+    private LocalDate fechaInicio = LocalDate.of(2024,10,22);
     private int numeroDeFuncionesImpartidas;
 
     public Integer getIdDatos() {

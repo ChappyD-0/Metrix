@@ -121,6 +121,7 @@ public class FuncionController {
         int cantidadBoletosVendidos = funcion.getBoletosVendidos().size();
         return ResponseEntity.ok(cantidadBoletosVendidos);
     }
+
     @CrossOrigin
     @GetMapping("/{id}/boletos")//este metodo es para obetenr los boletos vendidos
     public ResponseEntity<?> obtenerBoletosVendidos(@PathVariable Integer id) {
