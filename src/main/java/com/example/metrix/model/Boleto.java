@@ -2,38 +2,49 @@ package com.example.metrix.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
+@Table(name = "boleto")
 public class Boleto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
-    @NotNull
-    private int fila;
+    @NotBlank(message = "El código del boleto no puede estar en blanco.")
+    @Column(nullable = false, unique = true)  // Marcamos 'unique' para evitar duplicados.
+    private String codigo;
 
-    @NotNull
-    private int coluna;
-
-    @ManyToOne
-    @JoinColumn(name = "funcion_id")
+    @ManyToOne(fetch = FetchType.LAZY)  // FetchType.LAZY para mejorar el rendimiento.
+    @JoinColumn(name = "funcion_id", nullable = false)
     @JsonBackReference(value = "funcion-boletos")
     private Funcion funcion;
 
-    @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)  // Mismo fetch lazy para evitar cargar demasiadas relaciones.
+    @JoinColumn(name = "compra_id", nullable = false)
     @JsonBackReference
-    @JoinColumn(name = "compra_id")
     private Compra compra;
 
-    public @NotNull Compra getCompra() {
-        return compra;
+    // Constructor por defecto
+    public Boleto() {
     }
 
-    public void setCompra(@NotNull Compra compra) {
-        this.compra = compra;
+    // Getters y Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public Funcion getFuncion() {
@@ -44,29 +55,11 @@ public class Boleto {
         this.funcion = funcion;
     }
 
-    public Integer getId() {
-        return id;
+    public Compra getCompra() {
+        return compra;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    @NotNull
-    public int getFila() {
-        return fila;
-    }
-
-    public void setFila(@NotNull int fila) {
-        this.fila = fila;
-    }
-
-    @NotNull
-    public int getColuna() {
-        return coluna;
-    }
-
-    public void setColuna(@NotNull int coluna) {
-        this.coluna = coluna;
+    public void setCompra(Compra compra) {
+        this.compra = compra;
     }
 }

@@ -1,6 +1,5 @@
 package com.example.metrix.model;
 
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -8,24 +7,21 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
 public class Funcion {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "Pelicula_id")
-    @NotNull(message = "El nombre no puede ser nulo")
+    @JoinColumn(name = "pelicula_id")
+    @NotNull(message = "La película no puede ser nula")
     private Pelicula pelicula;
 
     @NotNull(message = "La fecha no puede ser nula")
     private LocalDate fecha;
 
-    @NotNull
     @NotNull(message = "La hora no puede ser nula")
     private int hora;
 
@@ -39,14 +35,15 @@ public class Funcion {
     @Column(name = "dinero_recaudado")
     private Double dineroRecaudado = 0.0;
 
-    @Column(name = "boletos_vendidos")
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "funcion")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "funcion", orphanRemoval = true)
     @JsonManagedReference(value = "funcion-boletos")
     private List<Boleto> boletosVendidos = new ArrayList<>();
 
+    // Constructor por defecto
+    public Funcion() {
+    }
 
-
-
+    // Constructor con parámetros
     public Funcion(Integer id, Pelicula pelicula, LocalDate fecha, int hora, double precioBoleto, String estado) {
         this.id = id;
         this.pelicula = pelicula;
@@ -54,29 +51,9 @@ public class Funcion {
         this.hora = hora;
         this.precioBoleto = precioBoleto;
         this.estado = estado;
-        this.dineroRecaudado = 0.0;
-        this.boletosVendidos = new ArrayList<Boleto>();
     }
 
-    public Double getDineroRecaudado() {
-        return dineroRecaudado;
-    }
-
-    public void setDineroRecaudado(Double dineroRecaudado) {
-        this.dineroRecaudado = dineroRecaudado;
-    }
-
-    public List<Boleto> getBoletosVendidos() {
-        return boletosVendidos;
-    }
-
-    public void setBoletosVendidos(List<Boleto> boletosVendidos) {
-        this.boletosVendidos = boletosVendidos;
-    }
-
-    public Funcion() {
-
-    }
+    // Getters y Setters
     public Integer getId() {
         return id;
     }
@@ -123,5 +100,21 @@ public class Funcion {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public Double getDineroRecaudado() {
+        return dineroRecaudado;
+    }
+
+    public void setDineroRecaudado(Double dineroRecaudado) {
+        this.dineroRecaudado = dineroRecaudado;
+    }
+
+    public List<Boleto> getBoletosVendidos() {
+        return boletosVendidos;
+    }
+
+    public void setBoletosVendidos(List<Boleto> boletosVendidos) {
+        this.boletosVendidos = boletosVendidos;
     }
 }
